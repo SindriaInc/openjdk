@@ -26,11 +26,17 @@ RUN apk add \
     libressl-dev \
     bash \
     curl \
+    screen \
+    vim \
     wget \
     git \
     rsync \
     ca-certificates \
     tzdata && \
+    rm -rf /var/cache/apk/*
+
+# Install Maven
+RUN apk add maven && \ 
     rm -rf /var/cache/apk/*
 
 # Setting app user, timezone and permissions
