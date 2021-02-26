@@ -7,8 +7,12 @@ pipelines:
           name: Build Image
           script:
             - echo -e "${BLUE}Building image...${NC}"
-            - bash build.sh ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG} ${BITBUCKET_TAG}
-            - docker save ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG} --output "${BITBUCKET_REPO_SLUG}.tar"
+            - bash build.sh ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG} ${BITBUCKET_TAG} 8
+            - bash build.sh ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG} ${BITBUCKET_TAG} 11
+            - bash build.sh ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG} ${BITBUCKET_TAG} 14
+            - docker save ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-8 --output "${BITBUCKET_REPO_SLUG}-8.tar"
+            - docker save ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-11 --output "${BITBUCKET_REPO_SLUG}-11.tar"
+            - docker save ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-14 --output "${BITBUCKET_REPO_SLUG}-14.tar"
             - cowsay -f tux "Build Success"
           services:
             - docker
@@ -16,21 +20,31 @@ pipelines:
             - docker
           artifacts:
             - "*.tar"
+            - "*.tar"
+            - "*.tar"
       - step:
           name: Push Image
           script:
             - echo -e "${BLUE}Loading cached image...${NC}"
-            - docker load --input "${BITBUCKET_REPO_SLUG}.tar"
+            - docker load --input "${BITBUCKET_REPO_SLUG}-8.tar"
+            - docker load --input "${BITBUCKET_REPO_SLUG}-11.tar"
+            - docker load --input "${BITBUCKET_REPO_SLUG}-14.tar"
             - echo -e "${BLUE}Tagging cached image...${NC}"
-            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}"
-            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:latest"
+            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-8" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-8"
+            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-11" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-11"
+            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-14" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-14"
+            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-14" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:latest"
             - echo -e "${BLUE}Login into registry...${NC}"
             - echo ${DOCKERHUB_PASSWORD} | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
             - echo -e "${BLUE}Pushing image into registry...${NC}"
-            - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}
+            - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-8
+            - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-11
+            - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-14
             - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:latest
             - echo -e "${BLUE}Cleaning local registry...${NC}"
-            - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}
+            - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-8
+            - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-11
+            - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-14
             - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:latest
             - cowsay -f dragon "Well Done! New docker image is now on your registry."
           services:
