@@ -40,7 +40,7 @@ RUN apk add maven && \
     rm -rf /var/cache/apk/*
 
 # Add custom maven settings
-COPY resources/maven/settings.xml ${SINDRIA_USER}/.m2
+COPY resources/maven/settings.xml /usr/share/java/maven-3/conf
 
 # Setting app user, timezone and permissions
 RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S ${SINDRIA_USER} -u ${HOST_USER_UID} -G ${SINDRIA_USER} -h ${SINDRIA_USER_HOME} && \
