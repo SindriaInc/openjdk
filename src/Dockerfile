@@ -19,11 +19,6 @@ RUN apk update
 
 # Install packages and setting
 RUN apk add \
-    gcc \
-    g++ \
-    libffi-dev \
-    libc-dev \
-    libressl-dev \
     bash \
     curl \
     screen \
