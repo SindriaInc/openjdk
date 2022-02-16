@@ -21,6 +21,7 @@ RUN apk update
 RUN apk add \
     bash \
     curl \
+    mingw-w64-binutils \
     screen \
     vim \
     wget \
